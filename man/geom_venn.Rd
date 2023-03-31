@@ -14,6 +14,9 @@ geom_venn(
   show_percentage = TRUE,
   digits = 1,
   label_sep = ",",
+  count_column = NULL,
+  show_outside = c("auto", "none", "always"),
+  auto_scale = FALSE,
   fill_color = c("blue", "yellow", "green", "red"),
   fill_alpha = 0.5,
   stroke_color = "black",
@@ -27,17 +30,19 @@ geom_venn(
 )
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
-\code{\link[ggplot2:aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
-default), it is combined with the default mapping at the top level of the
-plot. You must supply \code{mapping} if there is no plot mapping.}
+\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}}. If specified and
+\code{inherit.aes = TRUE} (the default), it is combined with the default mapping
+at the top level of the plot. You must supply \code{mapping} if there is no plot
+mapping.}
 
 \item{data}{A data.frame or a list as input data.}
 
 \item{stat}{The statistical transformation to use on the data for this layer, as a string.}
 
-\item{position}{Position adjustment, either as a string, or the result of
-a call to a position adjustment function.}
+\item{position}{Position adjustment, either as a string naming the adjustment
+(e.g. \code{"jitter"} to use \code{position_jitter}), or the result of a call to a
+position adjustment function. Use the latter if you need to change the
+settings of the adjustment.}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
@@ -51,6 +56,12 @@ to the paired geom/stat.}
 \item{digits}{The desired number of digits after the decimal point}
 
 \item{label_sep}{separator character for displaying elements.}
+
+\item{count_column}{Specify column for element repeat count.}
+
+\item{show_outside}{Show outside elements (not belongs to any set).}
+
+\item{auto_scale}{Allow automatically resizing circles according to element counts.}
 
 \item{fill_color}{Filling colors in circles.}
 

@@ -1,6 +1,6 @@
 Package: ggvenn
 Title: Draw Venn Diagram by 'ggplot2'
-Version: 0.1.18
+Version: 0.1.19
 Authors@R: person(given = "Linlin", family = "Yan",
                   role = c("aut", "cre"),
                   email = "yanlinlin82@gmail.com",
@@ -21,6 +21,6 @@ Suggests: rmarkdown, testthat (>= 3.0.0)
 Imports: dplyr (>= 1.1.0), grid, rlang, scales (>= 1.2.0)
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2025-10-08 06:21:02 UTC; yanll
+Packaged: 2025-10-08 08:13:47 UTC; yanll
 Repository: CRAN
-Date/Publication: 2025-10-08 07:00:02 UTC
+Date/Publication: 2025-10-08 13:30:02 UTC

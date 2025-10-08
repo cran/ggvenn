@@ -11,13 +11,18 @@ geom_venn(
   position = "identity",
   ...,
   set_names = NULL,
+  element_column = NULL,
+  show_elements = FALSE,
+  show_set_totals = "none",
+  show_stats = c("cp", "c", "p"),
+  show_counts = TRUE,
   show_percentage = TRUE,
   digits = 1,
   label_sep = ",",
   count_column = NULL,
   show_outside = c("auto", "none", "always"),
   auto_scale = FALSE,
-  fill_color = c("blue", "yellow", "green", "red"),
+  fill_color = default_color_list,
   fill_alpha = 0.5,
   stroke_color = "black",
   stroke_alpha = 1,
@@ -26,7 +31,11 @@ geom_venn(
   set_name_color = "black",
   set_name_size = 6,
   text_color = "black",
-  text_size = 4
+  text_size = 4,
+  comma_sep = FALSE,
+  padding = 1,
+  max_elements = 6,
+  text_truncate = TRUE
 )
 }
 \arguments{
@@ -39,41 +48,84 @@ mapping.}
 
 \item{stat}{The statistical transformation to use on the data for this layer, as a string.}
 
-\item{position}{Position adjustment, either as a string naming the adjustment
-(e.g. \code{"jitter"} to use \code{position_jitter}), or the result of a call to a
-position adjustment function. Use the latter if you need to change the
-settings of the adjustment.}
+\item{position}{A position adjustment to use on the data for this layer. This
+can be used in various ways, including to prevent overplotting and
+improving the display. The \code{position} argument accepts the following:
+\itemize{
+\item The result of calling a position function, such as \code{position_jitter()}.
+This method allows for passing extra arguments to the position.
+\item A string naming the position adjustment. To give the position as a
+string, strip the function name of the \code{position_} prefix. For example,
+to use \code{position_jitter()}, give the position as \code{"jitter"}.
+\item For more information and other ways to specify the position, see the
+\link[ggplot2:layer_positions]{layer position} documentation.
+}}
 
-\item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
-often aesthetics, used to set an aesthetic to a fixed value, like
-\code{colour = "red"} or \code{size = 3}. They may also be parameters
-to the paired geom/stat.}
+\item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}'s \code{params} argument. These
+arguments broadly fall into one of 4 categories below. Notably, further
+arguments to the \code{position} argument, or aesthetics that are required
+can \emph{not} be passed through \code{...}. Unknown arguments that are not part
+of the 4 categories below are ignored.
+\itemize{
+\item Static aesthetics that are not mapped to a scale, but are at a fixed
+value and apply to the layer as a whole. For example, \code{colour = "red"}
+or \code{linewidth = 3}. The geom's documentation has an \strong{Aesthetics}
+section that lists the available options. The 'required' aesthetics
+cannot be passed on to the \code{params}. Please note that while passing
+unmapped aesthetics as vectors is technically possible, the order and
+required length is not guaranteed to be parallel to the input data.
+\item When constructing a layer using
+a \verb{stat_*()} function, the \code{...} argument can be used to pass on
+parameters to the \code{geom} part of the layer. An example of this is
+\code{stat_density(geom = "area", outline.type = "both")}. The geom's
+documentation lists which parameters it can accept.
+\item Inversely, when constructing a layer using a
+\verb{geom_*()} function, the \code{...} argument can be used to pass on parameters
+to the \code{stat} part of the layer. An example of this is
+\code{geom_area(stat = "density", adjust = 0.5)}. The stat's documentation
+lists which parameters it can accept.
+\item The \code{key_glyph} argument of \code{\link[ggplot2:layer]{layer()}} may also be passed on through
+\code{...}. This can be one of the functions described as
+\link[ggplot2:draw_key]{key glyphs}, to change the display of the layer in the legend.
+}}
 
 \item{set_names}{Set names, use column names if omitted.}
 
+\item{element_column}{A single character value use as column name to select elements.}
+
+\item{show_elements}{Show set elements instead of count/percentage.}
+
+\item{show_set_totals}{Show total count (c) and/or percentage (p) for each set.
+Pass a string like "cp" to show both. Any other string like "none" to hide both.}
+
+\item{show_stats}{Show count (c) and/or percentage (p) for each set.
+Pass a string like "cp" to show both.}
+
+\item{show_counts}{Show count for each set.}
+
 \item{show_percentage}{Show percentage for each set.}
 
-\item{digits}{The desired number of digits after the decimal point}
+\item{digits}{The desired number of digits after the decimal point.}
 
-\item{label_sep}{separator character for displaying elements.}
+\item{label_sep}{Separator character for displaying elements.}
 
 \item{count_column}{Specify column for element repeat count.}
 
-\item{show_outside}{Show outside elements (not belongs to any set).}
+\item{show_outside}{Show outside elements (not belongs to any set). Options: "auto", "none", "always".}
 
-\item{auto_scale}{Allow automatically resizing circles according to element counts.}
+\item{auto_scale}{Allow automatically resizing circles according to element counts (only for 2-set diagrams).}
 
-\item{fill_color}{Filling colors in circles.}
+\item{fill_color}{Filling colors in circles. Can be a single color or a vector of colors for each set.}
 
-\item{fill_alpha}{Transparency for filling circles.}
+\item{fill_alpha}{Transparency for filling circles. Can be a single value or a vector for each set.}
 
-\item{stroke_color}{Stroke color for drawing circles.}
+\item{stroke_color}{Stroke color for drawing circles. Can be a single color or a vector of colors for each set.}
 
-\item{stroke_alpha}{Transparency for drawing circles.}
+\item{stroke_alpha}{Transparency for drawing circles. Can be a single value or a vector for each set.}
 
-\item{stroke_size}{Stroke size for drawing circles.}
+\item{stroke_size}{Stroke size for drawing circles. Can be a single value or a vector for each set.}
 
-\item{stroke_linetype}{Line type for drawing circles.}
+\item{stroke_linetype}{Line type for drawing circles. Can be a single value or a vector for each set.}
 
 \item{set_name_color}{Text color for set names.}
 
@@ -82,9 +134,17 @@ to the paired geom/stat.}
 \item{text_color}{Text color for intersect contents.}
 
 \item{text_size}{Text size for intersect contents.}
+
+\item{comma_sep}{Whether to use comma as separator for displaying numbers.}
+
+\item{padding}{Padding for the plot. Change this to allow longer labels to be displayed.}
+
+\item{max_elements}{Maximum number of elements to display when show_elements=TRUE.}
+
+\item{text_truncate}{Whether to truncate text when elements exceed max_elements.}
 }
 \value{
-The ggplot object to print or save to file.
+A ggplot layer object to add to a ggplot.
 }
 \description{
 Plot venn diagram as a ggplot layer object. It supports only data frame as input.
@@ -93,11 +153,13 @@ Plot venn diagram as a ggplot layer object. It supports only data frame as input
 library(ggvenn)
 
 # use data.frame as input
-d <- tibble(value   = c(1,     2,     3,     5,     6,     7,     8,     9),
-            `Set 1` = c(TRUE,  FALSE, TRUE,  TRUE,  FALSE, TRUE,  FALSE, TRUE),
-            `Set 2` = c(TRUE,  FALSE, FALSE, TRUE,  FALSE, FALSE, FALSE, TRUE),
-            `Set 3` = c(TRUE,  TRUE,  FALSE, FALSE, FALSE, FALSE, TRUE,  TRUE),
-            `Set 4` = c(FALSE, FALSE, FALSE, FALSE, TRUE,  TRUE,  FALSE, FALSE))
+d <- dplyr::tibble(
+  value   = c(1,     2,     3,     5,     6,     7,     8,     9),
+  `Set 1` = c(TRUE,  FALSE, TRUE,  TRUE,  FALSE, TRUE,  FALSE, TRUE),
+  `Set 2` = c(TRUE,  FALSE, FALSE, TRUE,  FALSE, FALSE, FALSE, TRUE),
+  `Set 3` = c(TRUE,  TRUE,  FALSE, FALSE, FALSE, FALSE, TRUE,  TRUE),
+  `Set 4` = c(FALSE, FALSE, FALSE, FALSE, TRUE,  TRUE,  FALSE, FALSE)
+)
 
 # ggplot gramma
 ggplot(d) +
@@ -121,7 +183,7 @@ ggplot(d) +
 
 # hide percentage
 ggplot(d) +
-  geom_venn(aes(A = `Set 1`, B = `Set 2`), show_percentage = FALSE) +
+  geom_venn(aes(A = `Set 1`, B = `Set 2`), show_stats = "c") +
   coord_fixed() +
   theme_void()
 

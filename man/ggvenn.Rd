@@ -7,10 +7,18 @@
 ggvenn(
   data,
   columns = NULL,
+  element_column = NULL,
   show_elements = FALSE,
+  show_set_totals = "none",
+  show_stats = c("cp", "c", "p"),
+  show_counts = TRUE,
   show_percentage = TRUE,
   digits = 1,
-  fill_color = c("blue", "yellow", "green", "red"),
+  label_sep = ",",
+  count_column = NULL,
+  show_outside = c("auto", "none", "always"),
+  auto_scale = FALSE,
+  fill_color = default_color_list,
   fill_alpha = 0.5,
   stroke_color = "black",
   stroke_alpha = 1,
@@ -20,10 +28,10 @@ ggvenn(
   set_name_size = 6,
   text_color = "black",
   text_size = 4,
-  label_sep = ",",
-  count_column = NULL,
-  show_outside = c("auto", "none", "always"),
-  auto_scale = FALSE
+  comma_sep = FALSE,
+  padding = 1,
+  max_elements = 6,
+  text_truncate = TRUE
 )
 }
 \arguments{
@@ -31,23 +39,42 @@ ggvenn(
 
 \item{columns}{A character vector use as index to select columns/elements.}
 
+\item{element_column}{A single character value use as column name to select elements.
+It is only allowed when data is a data.frame.}
+
 \item{show_elements}{Show set elements instead of count/percentage.}
+
+\item{show_set_totals}{Show total count (c) and/or percentage (p) for each set.
+Pass a string like "cp" to show both. Any other string like "none" to hide both.}
+
+\item{show_stats}{Show count (c) and/or percentage (p) for each set.
+Pass a string like "cp" to show both. Any other string like "none" to hide both.}
+
+\item{show_counts}{Show count for each set.}
 
 \item{show_percentage}{Show percentage for each set.}
 
-\item{digits}{The desired number of digits after the decimal point}
+\item{digits}{The desired number of digits after the decimal point.}
 
-\item{fill_color}{Filling colors in circles.}
+\item{label_sep}{Separator character for displaying elements.}
 
-\item{fill_alpha}{Transparency for filling circles.}
+\item{count_column}{Specify column for element repeat count.}
 
-\item{stroke_color}{Stroke color for drawing circles.}
+\item{show_outside}{Show outside elements (not belongs to any set). Options: "auto", "none", "always".}
 
-\item{stroke_alpha}{Transparency for drawing circles.}
+\item{auto_scale}{Allow automatically resizing circles according to element counts (only for 2-set diagrams).}
 
-\item{stroke_size}{Stroke size for drawing circles.}
+\item{fill_color}{Filling colors in circles. Can be a single color or a vector of colors for each set.}
 
-\item{stroke_linetype}{Line type for drawing circles.}
+\item{fill_alpha}{Transparency for filling circles. Can be a single value or a vector for each set.}
+
+\item{stroke_color}{Stroke color for drawing circles. Can be a single color or a vector of colors for each set.}
+
+\item{stroke_alpha}{Transparency for drawing circles. Can be a single value or a vector for each set.}
+
+\item{stroke_size}{Stroke size for drawing circles. Can be a single value or a vector for each set.}
+
+\item{stroke_linetype}{Line type for drawing circles. Can be a single value or a vector for each set.}
 
 \item{set_name_color}{Text color for set names.}
 
@@ -57,13 +84,13 @@ ggvenn(
 
 \item{text_size}{Text size for intersect contents.}
 
-\item{label_sep}{Separator character for displaying elements.}
+\item{comma_sep}{Whether to use comma as separator for displaying numbers.}
 
-\item{count_column}{Specify column for element repeat count.}
+\item{padding}{Padding for the plot. Change this to allow longer labels to be displayed.}
 
-\item{show_outside}{Show outside elements (not belongs to any set).}
+\item{max_elements}{Maximum number of elements to display when show_elements=TRUE.}
 
-\item{auto_scale}{Allow automatically resizing circles according to element counts.}
+\item{text_truncate}{Whether to truncate text when elements exceed max_elements.}
 }
 \value{
 The ggplot object to print or save to file.
@@ -75,16 +102,13 @@ Plot venn diagram as an independent function. It supports both data frame and li
 library(ggvenn)
 
 # use list as input
-a <- list(`Set 1` = c(1, 3, 5, 7),
-          `Set 2` = c(1, 5, 9),
-          `Set 3` = c(1, 2, 8),
-          `Set 4` = c(6, 7))
-ggvenn(a, c("Set 1", "Set 2"))
-ggvenn(a, c("Set 1", "Set 2", "Set 3"))
+a <- list(A = 1:5, B = 4:9, C = c(2:3, 8:12), D = c(1, 5, 9))
+ggvenn(a, c("A", "B"))
+ggvenn(a, c("A", "B", "C"))
 ggvenn(a)
 
 # use data.frame as input
-d <- tibble(value   = c(1,     2,     3,     5,     6,     7,     8,     9),
+d <- dplyr::tibble(value   = c(1,     2,     3,     5,     6,     7,     8,     9),
             `Set 1` = c(TRUE,  FALSE, TRUE,  TRUE,  FALSE, TRUE,  FALSE, TRUE),
             `Set 2` = c(TRUE,  FALSE, FALSE, TRUE,  FALSE, FALSE, FALSE, TRUE),
             `Set 3` = c(TRUE,  TRUE,  FALSE, FALSE, FALSE, FALSE, TRUE,  TRUE),
@@ -97,14 +121,15 @@ ggvenn(d)
 ggvenn(d, c("Set 1", "Set 2"), fill_color = c("red", "blue"))
 
 # hide percentage
-ggvenn(d, c("Set 1", "Set 2"), show_percentage = FALSE)
+ggvenn(d, c("Set 1", "Set 2"), show_stats = "c")
 
 # change precision of percentages
 ggvenn(d, c("Set 1", "Set 2"), digits = 2)
 
 # show elements instead of count/percentage
 ggvenn(a, show_elements = TRUE)
-ggvenn(d, show_elements = "value")
+ggvenn(d, show_elements = TRUE, element_column = "value")
+
 }
 \seealso{
 geom_venn
